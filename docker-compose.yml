@@ -1,0 +1,112 @@
+version: '3'
+
+networks: 
+    frontend:
+        driver: ${NETWORKS_DRIVER}
+    backend:
+        driver: ${NETWORKS_DRIVER}
+
+services:
+    nginx:
+        restart: always
+        build: ./nginx
+        container_name: nginx
+        ports:
+            - 80:80
+            - 443:443
+        volumes: 
+            - ./nginx/sites:/etc/nginx/conf.d
+            - ${WWWROOT}:${CONTAINER_WWWROOT}
+        command: [nginx-debug, '-g', 'daemon off;']
+        depends_on: 
+            - php7.4-fpm
+        links: 
+            - php7.4-fpm
+        networks: 
+            - frontend
+            - backend
+    php7.4-fpm:
+        build: 
+            context: ./php7.4-fpm 
+            args:
+                - INSTALL_MONGO=${PHP_FPM_INSTALL_MONGO}
+                - INSTALL_OPCACHE=${PHP_FPM_INSTALL_OPCACHE}
+                - INSTALL_PHPREDIS=${PHP_FPM_INSTALL_PHPREDIS}
+                - INSTALL_MYSQLI=${PHP_FPM_INSTALL_MYSQLI}
+                - INSTALL_MYSQL_CLIENT=${PHP_FPM_INSTALL_MYSQL_CLIENT}
+                - INSTSLL_PDO_MYSQL=${PHP_FPM_INSTSLL_PDO_MYSQL}
+        container_name: php7.4-fpm
+        restart: always
+        working_dir: ${CONTAINER_WWWROOT}
+        ports:
+            - 9000:9000
+        volumes: 
+            - ./php7.4-fpm/php-fpm.d/www.conf:/usr/local/etc/php-fpm.d/www.conf
+            - ${WWWROOT}:${CONTAINER_WWWROOT}
+        networks: 
+            - backend
+    redis:
+        build: ./redis
+        container_name: redis
+        volumes:
+            - ${DATA_PATH}/redis:/data
+        ports:
+            - ${REDIS_PORT}:6379
+        networks:
+            - backend
+    
+    mysql:
+        build:
+            context: ./mysql
+            args:
+            - MYSQL_VERSION=${MYSQL_VERSION}
+        container_name: mysql
+        command: 
+            --innodb-use-native-aio=0 
+        environment:
+            - MYSQL_DATABASE=${MYSQL_DATABASE}
+            - MYSQL_USER=${MYSQL_USER}
+            - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+            - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+            - TIMEZONE=${WORKSPACE_TIMEZONE}
+        volumes:
+            - ${DATA_PATH}/mysql:/var/lib/mysql
+            - ${MYSQL_ENTRYPOINT_INITDB}:/docker-entrypoint-initdb.d
+        ports:
+            - ${MYSQL_PORT}:3306
+        networks:
+            - backend
+    
+    # mariadb:
+    #     build:
+    #         context: ./mariadb
+    #         args:
+    #         - http_proxy
+    #         - https_proxy
+    #         - no_proxy
+    #         - MARIADB_VERSION=${MARIADB_VERSION}
+    #     container_name: mariadb
+    #     volumes:
+    #         - ${DATA_PATH}/mariadb:/var/lib/mysql
+    #         - ${MARIADB_ENTRYPOINT_INITDB}:/docker-entrypoint-initdb.d
+    #     ports:
+    #         - ${MARIADB_PORT}:3366
+    #     environment:
+    #         - TZ=${WORKSPACE_TIMEZONE}
+    #         - MYSQL_DATABASE=${MARIADB_DATABASE}
+    #         - MYSQL_USER=${MARIADB_USER}
+    #         - MYSQL_PASSWORD=${MARIADB_PASSWORD}
+    #         - MYSQL_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+    #     networks:
+    #         - backend
+
+    # zookeeper:
+    #     build: ./zookeeper
+    #     container_name: zookeeper
+    #     volumes:
+    #         - ${DATA_PATH}/zookeeper/data:/data
+    #         - ${DATA_PATH}/zookeeper/datalog:/datalog
+    #     ports:
+    #         - ${ZOOKEEPER_PORT}:2181
+    #     networks:
+    #         - backend
