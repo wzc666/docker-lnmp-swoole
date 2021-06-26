@@ -81,11 +81,11 @@ RUN if [ ${INSTALL_MYSQLI} = true ]; then \
     docker-php-ext-install mysqli \
 ;fi
 
-USER root
-ARG INSTALL_MYSQL_CLIENT=false
-RUN if [ ${INSTALL_MYSQL_CLIENT} = true ]; then \
-      apt-get -y install default-mysql-client \
-;fi
+# USER root
+# ARG INSTALL_MYSQL_CLIENT=false
+# RUN if [ ${INSTALL_MYSQL_CLIENT} = true ]; then \
+#       apt-get -y install default-mysql-client \
+# ;fi
 
 # Redis
 ARG INSTALL_PHPREDIS=false
@@ -99,9 +99,9 @@ RUN if [ ${INSTALL_PHPREDIS} = true ]; then \
 
 
 # 安装 Composer
-# ENV COMPOSER_HOME /root/composer
-# RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-# ENV PATH $COMPOSER_HOME/vendor/bin:$PATH
+ENV COMPOSER_HOME /root/composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+ENV PATH $COMPOSER_HOME/vendor/bin:$PATH
 
 ARG INSTALL_OCI8=false
 

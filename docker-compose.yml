@@ -5,8 +5,8 @@ networks:
         driver: ${NETWORKS_DRIVER}
     backend:
         driver: ${NETWORKS_DRIVER}
-    elastic:
-        driver: bridge
+    # elastic:
+    #     driver: bridge
 
 services:
     nginx:
@@ -79,7 +79,20 @@ services:
             - ${MYSQL_PORT}:3306
         networks:
             - backend
-    
+    rabbitmq:
+        build: ./rabbitmq
+        container_name: rabbitmq
+        restart: always
+        hostname: rabbitmq
+        ports: 
+            - 15672:15672
+            - 5672:5672
+        volumes: 
+            - ${DATA_PATH}/rabbitmq:/var/lib/rabbitmq
+        environment: 
+            - RABBITMQ_DEFAULT_USER=root
+            - RABBITMQ_DEFAULT_PASS=root
+      
     # mariadb:
     #     build:
     #         context: ./mariadb
@@ -114,107 +127,109 @@ services:
     #     networks:
     #         - backend
 
-    es01:
-        image: elasticsearch:7.11.2
-        container_name: es01
-        environment:
-            - node.name=es01
-            - node.master=true 
-            - cluster.name=es-docker-cluster
-            - discovery.seed_hosts=es02,es03
-            - cluster.initial_master_nodes=es01,es02,es03
-            - bootstrap.memory_lock=true
-            - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
-        ulimits:
-            memlock:
-                soft: -1
-                hard: -1
-        volumes:
-            - data01:/usr/share/elasticsearch/data
-        ports:
-            - 9200:9200
-        networks:
-            - elastic
-    es02:
-        image: elasticsearch:7.11.2
-        container_name: es02
-        environment:
-            - node.name=es02
-            - cluster.name=es-docker-cluster
-            - discovery.seed_hosts=es01,es03
-            - cluster.initial_master_nodes=es01,es02,es03
-            - bootstrap.memory_lock=true
-            - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
-        ulimits:
-            memlock:
-                soft: -1
-                hard: -1
-        volumes:
-            - data02:/usr/share/elasticsearch/data
-        networks:
-            - elastic
-    es03:
-        image: elasticsearch:7.11.2
-        container_name: es03
-        environment:
-            - node.name=es03
-            - cluster.name=es-docker-cluster
-            - discovery.seed_hosts=es01,es02
-            - cluster.initial_master_nodes=es01,es02,es03
-            - bootstrap.memory_lock=true
-            - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
-        ulimits:
-            memlock:
-                soft: -1
-                hard: -1
-        volumes:
-            - data03:/usr/share/elasticsearch/data
-        networks:
-            - elastic
-    kibana:
-        container_name: kibana
-        image: kibana:7.11.2
-        volumes:
-            - ./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
-        environment: 
-            - ELASTICSEARCH_URL:http://es01:9200
-            # - ELASTICSEARCH_HOSTS:'["http://es01:9200","http://es02:9200","http://es03:9200"]'
-        ports: 
-            - 5601:5601
-        links: 
-            - es01
-        networks:
-            - elastic
-    canal:
-        image: canal/canal-server:latest
-        container_name: canal-server
-        ports: 
-            - 11111:11111
-        environment: 
-            - canal.instance.mysql.slaveId=8899
-            - canal.auto.scan=false
-            - canal.destinations=test
-            - canal.instance.master.address=mysql:3306
-            - canal.instance.defaultDatabaseName=kf
-            - canal.instance.dbUsername=canal
-            - canal.instance.dbPassword=canal
-            - canal.mq.topic=big_data
-            - canal.instance.filter.regex=esen_approval.apt_approval
-        volumes: 
-            # - ./canal-server/conf:/home/admin/canal-server/conf
-            - ./canal-server/logs:/home/admin/canal-server/logs
-        depends_on: 
-            - mysql
-        # links: 
-            # - mysql
-        hostname: '0'
-        networks:
-            - backend 
-volumes:
-    data01:
-        driver: local
-    data02:
-        driver: local
-    data03:
-        driver: local
+#     es01:
+#         image: elasticsearch:7.11.2
+#         container_name: es01
+#         environment:
+#             - node.name=es01
+#             - node.master=true 
+#             - cluster.name=es-docker-cluster
+#             - discovery.seed_hosts=es02,es03
+#             - cluster.initial_master_nodes=es01,es02,es03
+#             - bootstrap.memory_lock=true
+#             - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+#         ulimits:
+#             memlock:
+#                 soft: -1
+#                 hard: -1
+#         volumes:
+#             - data01:/usr/share/elasticsearch/data
+#         ports:
+#             - 9200:9200
+#         networks:
+#             - elastic
+#     es02:
+#         image: elasticsearch:7.11.2
+#         container_name: es02
+#         environment:
+#             - node.name=es02
+#             - cluster.name=es-docker-cluster
+#             - discovery.seed_hosts=es01,es03
+#             - cluster.initial_master_nodes=es01,es02,es03
+#             - bootstrap.memory_lock=true
+#             - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+#         ulimits:
+#             memlock:
+#                 soft: -1
+#                 hard: -1
+#         volumes:
+#             - data02:/usr/share/elasticsearch/data
+#         networks:
+#             - elastic
+#     es03:
+#         image: elasticsearch:7.11.2
+#         container_name: es03
+#         environment:
+#             - node.name=es03
+#             - cluster.name=es-docker-cluster
+#             - discovery.seed_hosts=es01,es02
+#             - cluster.initial_master_nodes=es01,es02,es03
+#             - bootstrap.memory_lock=true
+#             - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+#         ulimits:
+#             memlock:
+#                 soft: -1
+#                 hard: -1
+#         volumes:
+#             - data03:/usr/share/elasticsearch/data
+#         networks:
+#             - elastic
+#     kibana:
+#         container_name: kibana
+#         image: kibana:7.11.2
+#         volumes:
+#             - ./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
+#         environment: 
+#             - ELASTICSEARCH_URL:http://es01:9200
+#             # - ELASTICSEARCH_HOSTS:'["http://es01:9200","http://es02:9200","http://es03:9200"]'
+#         ports: 
+#             - 5601:5601
+#         links: 
+#             - es01
+#         networks:
+#             - elastic
+#     canal:
+#         image: canal/canal-server:latest
+#         container_name: canal-server
+#         ports: 
+#             - 11111:11111
+#         environment: 
+#             - canal.instance.mysql.slaveId=8899
+#             - canal.auto.scan=false
+#             - canal.destinations=test
+#             - canal.instance.master.address=mysql:3306
+#             - canal.instance.defaultDatabaseName=kf
+#             - canal.instance.dbUsername=canal
+#             - canal.instance.dbPassword=canal
+#             - canal.mq.topic=big_data
+#             - canal.instance.filter.regex=esen_approval.apt_approval
+#         volumes: 
+#             # - ./canal-server/conf:/home/admin/canal-server/conf
+#             - ./canal-server/logs:/home/admin/canal-server/logs
+#         depends_on: 
+#             - mysql
+#         # links: 
+#             # - mysql
+#         hostname: '0'
+#         networks:
+#             - backend 
+# volumes:
+#     data01:
+#         driver: local
+#     data02:
+#         driver: local
+#     data03:
+#         driver: local
+
+
     
