@@ -1,0 +1,45 @@
+2021-03-28 14:16:17.301 [main] INFO  com.alibaba.otter.canal.deployer.CanalLauncher - ## set default uncaught exception handler
+2021-03-28 14:16:17.374 [main] INFO  com.alibaba.otter.canal.deployer.CanalLauncher - ## load canal configurations
+2021-03-28 14:16:17.398 [main] INFO  com.alibaba.otter.canal.deployer.CanalStarter - ## start the canal server.
+2021-03-28 14:16:17.480 [main] INFO  com.alibaba.otter.canal.deployer.CanalController - ## start the canal server[172.18.0.5(172.18.0.5):11111]
+2021-03-28 14:16:19.434 [main] INFO  com.alibaba.otter.canal.deployer.CanalStarter - ## the canal server is running now ......
+2021-03-28 14:19:12.816 [Thread-6] INFO  com.alibaba.otter.canal.deployer.CanalStarter - ## stop the canal server
+2021-03-28 14:19:13.045 [Thread-6] INFO  com.alibaba.otter.canal.deployer.CanalController - ## stop the canal server[172.18.0.5(172.18.0.5):11111]
+2021-03-28 14:19:13.058 [Thread-6] INFO  com.alibaba.otter.canal.deployer.CanalStarter - ## canal server is down.
+2021-03-28 14:20:10.332 [main] INFO  com.alibaba.otter.canal.deployer.CanalLauncher - ## set default uncaught exception handler
+2021-03-28 14:20:10.427 [main] INFO  com.alibaba.otter.canal.deployer.CanalLauncher - ## load canal configurations
+2021-03-28 14:20:10.452 [main] INFO  com.alibaba.otter.canal.deployer.CanalStarter - ## start the canal server.
+2021-03-28 14:20:10.574 [main] INFO  com.alibaba.otter.canal.deployer.CanalController - ## start the canal server[172.18.0.5(172.18.0.5):11111]
+2021-03-28 14:20:13.841 [main] INFO  com.alibaba.otter.canal.deployer.CanalStarter - ## the canal server is running now ......
+2021-03-28 14:25:28.522 [Thread-6] INFO  com.alibaba.otter.canal.deployer.CanalStarter - ## stop the canal server
+2021-03-28 14:25:28.735 [Thread-6] INFO  com.alibaba.otter.canal.deployer.CanalController - ## stop the canal server[172.18.0.5(172.18.0.5):11111]
+2021-03-28 14:25:28.753 [Thread-6] INFO  com.alibaba.otter.canal.deployer.CanalStarter - ## canal server is down.
+2021-03-28 14:25:31.925 [main] INFO  com.alibaba.otter.canal.deployer.CanalLauncher - ## set default uncaught exception handler
+2021-03-28 14:25:32.001 [main] INFO  com.alibaba.otter.canal.deployer.CanalLauncher - ## load canal configurations
+2021-03-28 14:25:32.042 [main] INFO  com.alibaba.otter.canal.deployer.CanalStarter - ## start the canal server.
+2021-03-28 14:25:32.153 [main] INFO  com.alibaba.otter.canal.deployer.CanalController - ## start the canal server[172.18.0.5(172.18.0.5):11111]
+2021-03-28 14:25:35.264 [main] INFO  com.alibaba.otter.canal.deployer.CanalStarter - ## the canal server is running now ......
+2021-03-28 14:27:42.602 [Thread-6] INFO  com.alibaba.otter.canal.deployer.CanalStarter - ## stop the canal server
+2021-03-28 14:27:42.651 [Thread-6] INFO  com.alibaba.otter.canal.deployer.CanalController - ## stop the canal server[172.18.0.5(172.18.0.5):11111]
+2021-03-28 14:27:42.664 [Thread-6] INFO  com.alibaba.otter.canal.deployer.CanalStarter - ## canal server is down.
+2021-03-28 14:27:58.953 [main] INFO  com.alibaba.otter.canal.deployer.CanalLauncher - ## set default uncaught exception handler
+2021-03-28 14:27:59.028 [main] INFO  com.alibaba.otter.canal.deployer.CanalLauncher - ## load canal configurations
+2021-03-28 14:27:59.050 [main] INFO  com.alibaba.otter.canal.deployer.CanalStarter - ## start the canal server.
+2021-03-28 14:27:59.126 [main] INFO  com.alibaba.otter.canal.deployer.CanalController - ## start the canal server[172.18.0.5(172.18.0.5):11111]
+2021-03-28 14:28:01.504 [main] INFO  com.alibaba.otter.canal.deployer.CanalStarter - ## the canal server is running now ......
+2021-03-28 14:28:20.994 [Thread-6] INFO  com.alibaba.otter.canal.deployer.CanalStarter - ## stop the canal server
+2021-03-28 14:28:21.253 [Thread-6] INFO  com.alibaba.otter.canal.deployer.CanalController - ## stop the canal server[172.18.0.5(172.18.0.5):11111]
+2021-03-28 14:28:21.267 [Thread-6] INFO  com.alibaba.otter.canal.deployer.CanalStarter - ## canal server is down.
+2021-03-28 14:28:47.587 [main] INFO  com.alibaba.otter.canal.deployer.CanalLauncher - ## set default uncaught exception handler
+2021-03-28 14:28:47.644 [main] INFO  com.alibaba.otter.canal.deployer.CanalLauncher - ## load canal configurations
+2021-03-28 14:28:47.663 [main] INFO  com.alibaba.otter.canal.deployer.CanalStarter - ## start the canal server.
+2021-03-28 14:28:47.736 [main] INFO  com.alibaba.otter.canal.deployer.CanalController - ## start the canal server[172.18.0.5(172.18.0.5):11111]
+2021-03-28 14:28:49.444 [main] INFO  com.alibaba.otter.canal.deployer.CanalStarter - ## the canal server is running now ......
+2021-03-28 14:52:51.478 [Thread-6] INFO  com.alibaba.otter.canal.deployer.CanalStarter - ## stop the canal server
+2021-03-28 14:52:51.669 [Thread-6] INFO  com.alibaba.otter.canal.deployer.CanalController - ## stop the canal server[172.18.0.5(172.18.0.5):11111]
+2021-03-28 14:52:51.683 [Thread-6] INFO  com.alibaba.otter.canal.deployer.CanalStarter - ## canal server is down.
+2021-03-28 14:53:06.333 [main] INFO  com.alibaba.otter.canal.deployer.CanalLauncher - ## set default uncaught exception handler
+2021-03-28 14:53:06.404 [main] INFO  com.alibaba.otter.canal.deployer.CanalLauncher - ## load canal configurations
+2021-03-28 14:53:06.429 [main] INFO  com.alibaba.otter.canal.deployer.CanalStarter - ## start the canal server.
+2021-03-28 14:53:06.519 [main] INFO  com.alibaba.otter.canal.deployer.CanalController - ## start the canal server[172.18.0.5(172.18.0.5):11111]
+2021-03-28 14:53:09.745 [main] INFO  com.alibaba.otter.canal.deployer.CanalStarter - ## the canal server is running now ......
