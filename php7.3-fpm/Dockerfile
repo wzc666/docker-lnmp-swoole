@@ -1,4 +1,5 @@
-FROM php:7.4-fpm
+ARG PHP_VERSION = 7.3.33
+FROM php:{$PHP_VERSION}-fpm
 RUN apt-get update && apt-get install -y \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
@@ -30,19 +31,11 @@ RUN set -xe; \
     docker-php-ext-configure zip; \
     docker-php-ext-install zip && \
     php -m | grep -q 'zip' && \
-    apt-get install -y libcurl4-openssl-dev  pkg-config  libssl-dev
-
-RUN set -xe; \
-    apt-get update -yqq && \
-    pecl channel-update pecl.php.net && \
-    apt-get install -yqq \
-    apt-utils \
-    # 安装zip扩展
-    libzip-dev zip unzip && \
-    docker-php-ext-configure zip && \
-    docker-php-ext-install zip && \
-    php -m | grep -q 'zip' && \
+    apt-get install -y libcurl4-openssl-dev  pkg-config  libssl-dev && \
     docker-php-ext-install pcntl 
+
+
+ 
 
 # 安装 PECL 拓展，安装swoole
 
@@ -50,8 +43,8 @@ RUN set -xe; \
 #     && docker-php-ext-enable swoole
 
 # 指定了swoole 版本，因为最新的swoole 要php8
-RUN  pecl install -o -f https://pecl.php.net/get/swoole-4.8.10.tgz \
-    && docker-php-ext-enable swoole
+# RUN  pecl install -o -f https://pecl.php.net/get/swoole-4.8.10.tgz \
+#     && docker-php-ext-enable swoole
 
 
 # PDO_MYSQL

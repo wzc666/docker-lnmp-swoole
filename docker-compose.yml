@@ -5,6 +5,10 @@ networks:
         driver: ${NETWORKS_DRIVER}
     backend:
         driver: ${NETWORKS_DRIVER}
+    dev_backend:
+        driver: ${NETWORKS_DRIVER}
+        external: 
+            name: dev_backend
     # elastic:
     #     driver: bridge
 
@@ -19,17 +23,67 @@ services:
         volumes: 
             - ./nginx/sites:/etc/nginx/conf.d
             - ${WWWROOT}:${CONTAINER_WWWROOT}
+            - ./log/nginx:/var/log/nginx
         command: [nginx-debug, '-g', 'daemon off;']
         depends_on: 
-            - php7.1-fpm
+            - php7.4-fpm
+            - php7.2-fpm
         links: 
-            - php7.1-fpm
+            - php7.4-fpm
+            - php7.2-fpm
         networks: 
             - frontend
             - backend
-    # php7.4-fpm:
+            - dev_backend
+    php7.4-fpm:
+        build: 
+            context: ./php7.4-fpm 
+            args:
+                - INSTALL_MONGO=${PHP_FPM_INSTALL_MONGO}
+                - INSTALL_OPCACHE=${PHP_FPM_INSTALL_OPCACHE}
+                - INSTALL_PHPREDIS=${PHP_FPM_INSTALL_PHPREDIS}
+                - INSTALL_MYSQLI=${PHP_FPM_INSTALL_MYSQLI}
+                - INSTALL_MYSQL_CLIENT=${PHP_FPM_INSTALL_MYSQL_CLIENT}
+                - INSTSLL_PDO_MYSQL=${PHP_FPM_INSTSLL_PDO_MYSQL}
+        container_name: php7.4-fpm
+        restart: always
+        working_dir: ${CONTAINER_WWWROOT}
+        ports:
+            - 9000:9000
+        volumes: 
+            - ./php7.4-fpm/php-fpm.d/www.conf:/usr/local/etc/php-fpm.d/www.conf
+            - ./php7.4-fpm/upload.ini:/usr/local/etc/php/conf.d/upload.ini
+            - ${WWWROOT}:${CONTAINER_WWWROOT}
+            - ./data/logs:/data/logs
+            - ./data/tmp:/data/tmp
+            - ./data/www:/data/www
+        networks: 
+            - backend
+            - dev_backend
+    php7.2-fpm:
+        build: 
+            context: ./php7.2-fpm 
+            args:
+                - INSTALL_MONGO=${PHP_FPM_INSTALL_MONGO}
+                - INSTALL_OPCACHE=${PHP_FPM_INSTALL_OPCACHE}
+                - INSTALL_PHPREDIS=${PHP_FPM_INSTALL_PHPREDIS}
+                - INSTALL_MYSQLI=${PHP_FPM_INSTALL_MYSQLI}
+                - INSTALL_MYSQL_CLIENT=${PHP_FPM_INSTALL_MYSQL_CLIENT}
+                - INSTSLL_PDO_MYSQL=${PHP_FPM_INSTSLL_PDO_MYSQL}
+        container_name: php7.2-fpm
+        restart: always
+        working_dir: ${CONTAINER_WWWROOT}
+        ports:
+            - 9002:9000
+        volumes: 
+            - ./php7.2-fpm/php-fpm.d/www.conf:/usr/local/etc/php-fpm.d/www.conf
+            - ${WWWROOT}:${CONTAINER_WWWROOT}
+        networks: 
+            - backend     
+            - dev_backend      
+    # php7.1-fpm:
     #     build: 
-    #         context: ./php7.4-fpm 
+    #         context: ./php7.1-fpm 
     #         args:
     #             - INSTALL_MONGO=${PHP_FPM_INSTALL_MONGO}
     #             - INSTALL_OPCACHE=${PHP_FPM_INSTALL_OPCACHE}
@@ -46,38 +100,18 @@ services:
     #         - ./php7.4-fpm/php-fpm.d/www.conf:/usr/local/etc/php-fpm.d/www.conf
     #         - ${WWWROOT}:${CONTAINER_WWWROOT}
     #     networks: 
+    #         - backend        
+    # redis:
+    #     build: ./redis
+    #     container_name: redis
+    #     volumes:
+    #         - ${DATA_PATH}/redis:/data
+    #     ports:
+    #         - ${REDIS_PORT}:6379
+    #     networks:
     #         - backend
-    php7.1-fpm:
-        build: 
-            context: ./php7.1-fpm 
-            args:
-                - INSTALL_MONGO=${PHP_FPM_INSTALL_MONGO}
-                - INSTALL_OPCACHE=${PHP_FPM_INSTALL_OPCACHE}
-                - INSTALL_PHPREDIS=${PHP_FPM_INSTALL_PHPREDIS}
-                - INSTALL_MYSQLI=${PHP_FPM_INSTALL_MYSQLI}
-                - INSTALL_MYSQL_CLIENT=${PHP_FPM_INSTALL_MYSQL_CLIENT}
-                - INSTSLL_PDO_MYSQL=${PHP_FPM_INSTSLL_PDO_MYSQL}
-        container_name: php7.4-fpm
-        restart: always
-        working_dir: ${CONTAINER_WWWROOT}
-        ports:
-            - 9000:9000
-        volumes: 
-            - ./php7.4-fpm/php-fpm.d/www.conf:/usr/local/etc/php-fpm.d/www.conf
-            - ${WWWROOT}:${CONTAINER_WWWROOT}
-        networks: 
-            - backend        
-    redis:
-        build: ./redis
-        container_name: redis
-        volumes:
-            - ${DATA_PATH}/redis:/data
-        ports:
-            - ${REDIS_PORT}:6379
-        networks:
-            - backend
-    
     mysql:
+        platform: linux/x86_64
         build:
             context: ./mysql
             args:
@@ -99,20 +133,73 @@ services:
             - ${MYSQL_PORT}:3306
         networks:
             - backend
-    rabbitmq:
-        build: ./rabbitmq
-        container_name: rabbitmq
-        restart: always
-        hostname: rabbitmq
-        ports: 
-            - 15672:15672
-            - 5672:5672
-        volumes: 
-            - ${DATA_PATH}/rabbitmq:/var/lib/rabbitmq
-        environment: 
-            - RABBITMQ_DEFAULT_USER=root
-            - RABBITMQ_DEFAULT_PASS=root
-      
+    mysql5.7:
+        platform: linux/x86_64
+        build:
+            context: ./mysql${MYSQL_OTHER_VERSION}
+            args:
+            - MYSQL_VERSION=${MYSQL_OTHER_VERSION}
+        container_name: mysql${MYSQL_OTHER_VERSION}
+        command: 
+            --innodb-use-native-aio=0 
+        environment:
+            - MYSQL_DATABASE=${MYSQL_DATABASE}
+            # - MYSQL_USER=${MYSQL_USER}
+            # - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+            - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+            - TIMEZONE=${WORKSPACE_TIMEZONE}
+        volumes:
+            - ${DATA_PATH}/mysql${MYSQL_OTHER_VERSION}:/var/lib/mysql
+            - ${MYSQL_OTHER_ENTRYPOINT_INITDB}:/docker-entrypoint-initdb.d
+            - ./mysql${MYSQL_OTHER_VERSION}/my.cnf:/etc/mysql/conf.d/my.cnf
+        ports:
+            - ${MYSQL_OTHER_PORT}:3306
+        networks:
+            - backend
+    mongo5.0:
+        build:
+            context: ./mongodb
+            args:
+            - MONGODB_VERSION=${MONGODB_VERSION}
+        container_name: mongodb-${MONGODB_VERSION}
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=root
+            - MONGO_INITDB_ROOT_PASSWORD=root
+            - MONGO_INITDB_DATABASE=mix
+            - MONGO_INITDB_USERNAME=username
+            - MONGO_INITDB_PASSWORD=password
+        volumes:
+            - ${DATA_PATH}/mongodb:/data/db
+            - ${MONGODB_ENTRYPOINT_INITDB}:/docker-entrypoint-initdb.d
+            - ./mongodb/mongod.conf:/etc/mongod.conf
+        ports:
+            - 27017:27017
+        networks:
+            - backend
+    # rabbitmq:
+    #     build: ./rabbitmq
+    #     container_name: rabbitmq
+    #     restart: always
+    #     hostname: rabbitmq
+    #     ports: 
+    #         - 15672:15672
+    #         - 5672:5672
+    #     volumes: 
+    #         - ${DATA_PATH}/rabbitmq:/var/lib/rabbitmq
+    #     environment: 
+    #         - RABBITMQ_DEFAULT_USER=root
+    #         - RABBITMQ_DEFAULT_PASS=root
+    # activemq:
+    #     build: ./activemq
+    #     container_name: activemq
+    #     restart: always
+    #     ports:
+    #         - 61616:61616
+    #         - 5672:5672
+    #         - 61613:61613
+    #         - 1883:1883
+    #         - 61614:61614
+    #         - 8161:8161
     # mariadb:
     #     build:
     #         context: ./mariadb
